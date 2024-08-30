@@ -36,6 +36,7 @@ pkgs.stdenv.mkDerivation rec {
     echo "Installing $pname..."
     mkdir -p $out/bin
     cp $src $out/bin/runpodctl
+    chmod 555 $out/bin/runpodctl
   '';
 
   meta = with pkgs.stdenv.lib; {
