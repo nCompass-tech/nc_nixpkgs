@@ -14,10 +14,10 @@ pkgs.stdenv.mkDerivation rec {
     let
       os_arch_pair = "${os}_${arch}";
       sha256_map = {
-        "Darwin_arm64" = "Zc51NNU24CNnTHpWpjQ+w9PefZq+gNWdei4zErLZYXQ=";
-        "Darwin_amd64" = "0a7w0l2f5qvh36nghciwr64nxwnikka679qdgnqg88ks5zhy1mv0";
-        "Linux_arm64"  = "0p6jjnc3js2507qbhy58ahsjch80b9v5mmql6p1r68ilg51p0xq6";
-        "Linux_amd64"  = "0am4dqlh80xscl50vkcww3jsba1ph422xbrm785sl1i6c0k60i7h";
+        "Darwin_arm64" = "00000000000000000000000000000000000000000000";
+        "Darwin_amd64" = "0000000000000000000000000000000000000000000000000000";
+        "Linux_arm64"  = "0000000000000000000000000000000000000000000000000000";
+        "Linux_amd64"  = "18yf4vr4pgdl5ssijmpf45amdasjrd3mbgnsp1cjnadszvsiphrk";
       };
     in 
       builtins.getAttr os_arch_pair sha256_map;
