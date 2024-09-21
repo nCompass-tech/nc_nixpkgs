@@ -33,7 +33,7 @@ pkgs.stdenv.mkDerivation rec {
   buildPhase = '':'';
 
   installPhase = ''
-    echo "Installing $pname..."
+    echo "Installings $pname..."
   '';
 
   meta = with pkgs.stdenv.lib; {
