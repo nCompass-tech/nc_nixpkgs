@@ -28,12 +28,14 @@ pkgs.stdenv.mkDerivation rec {
     sha256 = "${sha256}";
   };
 
-  unpackPhase = ":";
+  unpackPhase = ''
+    echo $src 
+  '';
 
   buildPhase = '':'';
 
   installPhase = ''
-    echo "Installings $pname..."
+    echo "Installing $pname..."
   '';
 
   meta = with pkgs.stdenv.lib; {
