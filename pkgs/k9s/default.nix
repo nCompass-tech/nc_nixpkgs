@@ -29,10 +29,12 @@ pkgs.stdenv.mkDerivation rec {
   };
 
   unpackPhase = ''
-    echo $src 
+    tar -xvfz $src
   '';
 
-  buildPhase = '':'';
+  buildPhase = ''
+    echo $src
+  '';
 
   installPhase = ''
     echo "Installing $pname..."
