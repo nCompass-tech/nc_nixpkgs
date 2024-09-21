@@ -29,6 +29,7 @@ pkgs.stdenv.mkDerivation rec {
   };
 
   unpackPhase = ''
+    echo $src
     tar -xvfz $src
   '';
 
