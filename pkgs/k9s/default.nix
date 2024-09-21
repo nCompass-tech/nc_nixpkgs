@@ -34,9 +34,10 @@ pkgs.stdenv.mkDerivation rec {
 
   installPhase = ''
     echo "Installing $pname..."
-    mkdir -p $out/bin
-    cp $src $out/bin/k9s
-    chmod 555 $out/bin/k9s
+    echo $out
+    # mkdir -p $out/bin
+    # cp $src $out/bin/k9s
+    # chmod 555 $out/bin/k9s
   '';
 
   meta = with pkgs.stdenv.lib; {
