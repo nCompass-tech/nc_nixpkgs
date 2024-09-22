@@ -27,15 +27,16 @@ pkgs.stdenv.mkDerivation rec {
       "https://github.com/derailed/k9s/releases/download/v${version}/k9s_${os}_${arch}.tar.gz";
     sha256 = "${sha256}";
   };
-
+  
   unpackPhase = ''
+    tar -xvf $src
   '';
-
+  
   buildPhase = ''
-    echo $src
-    tar -xvfz $src
+    echo "Unpack result: "
+    ls
   '';
-
+  
   installPhase = ''
     echo "Installing $pname..."
   '';
