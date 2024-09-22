@@ -15,8 +15,8 @@ pkgs.stdenv.mkDerivation rec {
       os_arch_pair = "${os}_${arch}";
       sha256_map = {
         "Darwin_arm64" = "0zgid60p3vcvi251sx75j05rxfh1hbczm7253cd82j0civ652sli";
-        "Darwin_amd64" = "0000000000000000000000000000000000000000000000000000";
-        "Linux_arm64"  = "0000000000000000000000000000000000000000000000000000";
+        "Darwin_amd64" = "0slhlmrmwa3mil04narzlazyrg77scfh0n45pkxv1x5y63crvxad";
+        "Linux_arm64"  = "0aaac893v6cw0s94ghwgp9hcv0j1yhm1gjxdl1d2kpj3d0h1aqqb";
         "Linux_amd64"  = "18yf4vr4pgdl5ssijmpf45amdasjrd3mbgnsp1cjnadszvsiphrk";
       };
     in 
@@ -40,7 +40,6 @@ pkgs.stdenv.mkDerivation rec {
     mkdir -p $out/bin
     cp k9s $out/bin/
     chmod 555 $out/bin/k9s
-    echo "$pname binary installed at " $out/bin/k9s
   '';
 
   meta = with pkgs.stdenv.lib; {
