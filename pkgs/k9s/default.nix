@@ -33,12 +33,14 @@ pkgs.stdenv.mkDerivation rec {
   '';
   
   buildPhase = ''
-    echo "Unpack result: "
-    ls
   '';
   
   installPhase = ''
     echo "Installing $pname..."
+    mkdir -p $out/bin
+    cp k9s $out/bin/
+    chmod 555 $out/bin/k9s
+    echo "$pname binary installed at " $out/bin/k9s
   '';
 
   meta = with pkgs.stdenv.lib; {
