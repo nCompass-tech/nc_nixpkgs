@@ -14,7 +14,7 @@ pkgs.stdenv.mkDerivation rec {
     let
       os_arch_pair = "${os}_${arch}";
       sha256_map = {
-        "Darwin_arm64" = "00000000000000000000000000000000000000000000";
+        "Darwin_arm64" = "0zgid60p3vcvi251sx75j05rxfh1hbczm7253cd82j0civ652sli";
         "Darwin_amd64" = "0000000000000000000000000000000000000000000000000000";
         "Linux_arm64"  = "0000000000000000000000000000000000000000000000000000";
         "Linux_amd64"  = "18yf4vr4pgdl5ssijmpf45amdasjrd3mbgnsp1cjnadszvsiphrk";
@@ -29,12 +29,11 @@ pkgs.stdenv.mkDerivation rec {
   };
 
   unpackPhase = ''
-    echo $src
-    tar -xvfz $src
   '';
 
   buildPhase = ''
     echo $src
+    tar -xvfz $src
   '';
 
   installPhase = ''
