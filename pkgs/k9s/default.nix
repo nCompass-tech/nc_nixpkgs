@@ -14,10 +14,10 @@ pkgs.stdenv.mkDerivation rec {
     let
       os_arch_pair = "${os}_${arch}";
       sha256_map = {
-        "Darwin_arm64" = "Zc51NNU24CNnTHpWpjQ+w9PefZq+gNWdei4zErLZYXQ=";
-        "Darwin_amd64" = "0a7w0l2f5qvh36nghciwr64nxwnikka679qdgnqg88ks5zhy1mv0";
-        "Linux_arm64"  = "0p6jjnc3js2507qbhy58ahsjch80b9v5mmql6p1r68ilg51p0xq6";
-        "Linux_amd64"  = "0am4dqlh80xscl50vkcww3jsba1ph422xbrm785sl1i6c0k60i7h";
+        "Darwin_arm64" = "0zgid60p3vcvi251sx75j05rxfh1hbczm7253cd82j0civ652sli";
+        "Darwin_amd64" = "0slhlmrmwa3mil04narzlazyrg77scfh0n45pkxv1x5y63crvxad";
+        "Linux_arm64"  = "0aaac893v6cw0s94ghwgp9hcv0j1yhm1gjxdl1d2kpj3d0h1aqqb";
+        "Linux_amd64"  = "18yf4vr4pgdl5ssijmpf45amdasjrd3mbgnsp1cjnadszvsiphrk";
       };
     in 
       builtins.getAttr os_arch_pair sha256_map;
@@ -27,14 +27,19 @@ pkgs.stdenv.mkDerivation rec {
       "https://github.com/derailed/k9s/releases/download/v${version}/k9s_${os}_${arch}.tar.gz";
     sha256 = "${sha256}";
   };
-
-  unpackPhase = ":";
-
-  buildPhase = '':'';
-
+  
+  unpackPhase = ''
+    tar -xvf $src
+  '';
+  
+  buildPhase = ''
+  '';
+  
   installPhase = ''
     echo "Installing $pname..."
-    echo $src
+    mkdir -p $out/bin
+    cp k9s $out/bin/
+    chmod 555 $out/bin/k9s
   '';
 
   meta = with pkgs.stdenv.lib; {
