@@ -64,26 +64,37 @@ imports = [
 
 environment.systemPackages = with pkgs; [
 	...
+    dconf
 	libsecret
 	gnome-keyring
-	libgnome-keyring
 	...
 ];
 
-ncompass.oneleet.enable = true;
+services = {
+  windowManager.i3 = {
+    ...
+    extraSessionCommands = ''
+        eval $(gnome-keyring-daemon --daemonize)
+        export SHH_AUTH_SOCK
+    '';
+  }
 
+  dbus = {
+    enable = true;
+    packaged = [ pkgs.dconf ];
+  }
+
+  gnome.gnome-keyring.enable = true;
+}
+
+programs = {
+    dconf.enable = true;
+}
+
+ncompass.oneleet.enable = true;
 security.pam.services = {
   login.enableGnomeKeyring = true;
   lightdm.enableGnomeKeyring = true;
-  gdm.enableGnomeKeyring = true;
-  gdm-password.enableGnomeKeyring = true;
-};
-
-security.wrappers.gnome-keyring-daemon = {
-  owner = "root";
-  group = "root";
-  capabilities = "cap_ipc_lock=ep";
-  source = "${pkgs.gnome-keyring}/bin/gnome-keyring-daemon";
 };
 
 ```
