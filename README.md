@@ -1,3 +1,9 @@
+Note: include these sections in a valid file connect to your /etc/nixos/configuration.nix
+### Steps:
+1. clone this repo
+2. add relevant snippets
+3. be sure to import relevant files related to snippets
+
 ### Setting up docker and virtual machine
 
 ```nix
@@ -20,7 +26,7 @@ virtualisation = {
 users.groups.libvirt.members = [ "deetz" ];
 ```
 
-### NordVPN
+### NordVPN (pgks/nordvpn/nordvpn.nix)
 
 ```nix
 nixpkgs.config.allowUnfree = true;
@@ -46,7 +52,7 @@ nordvpn connect
 nordvpn set autoconnect on
 ```
 
-### Oneleet
+### Oneleet (pkgs/oneleet/oneleet.nix)
 
 ```nix
 environment.systemPackages = with pkgs; [
