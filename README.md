@@ -2,7 +2,6 @@ Note: include these sections in a valid file connect to your /etc/nixos/configur
 ### Steps:
 1. clone this repo
 2. add relevant snippets
-3. be sure to import relevant files related to snippets
 
 ### Setting up docker and virtual machine
 
@@ -32,7 +31,9 @@ users.groups.libvirt.members = [ "deetz" ];
 nixpkgs.config.allowUnfree = true;
 ...
 imports = [
-  <location>/nordvpn.nix
+  ...
+  <location>/pkgs/nordvpn/nordvpn.nix
+  ...
 ];
 ...
 ncompass.nordvpn.enable = true;
@@ -55,6 +56,12 @@ nordvpn set autoconnect on
 ### Oneleet (pkgs/oneleet/oneleet.nix)
 
 ```nix
+imports = [
+  ...
+  <location>/pkgs/oneleet/oneleet.nix
+  ...
+];
+
 environment.systemPackages = with pkgs; [
 	...
 	libsecret
