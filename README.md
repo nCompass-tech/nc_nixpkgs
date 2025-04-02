@@ -48,7 +48,6 @@ users.groups.nordvpn = {};
 then in termnal run
 
 ```bash
-su -$USER
 nordpvn login # if its the first time
 nordvpn connect
 nordvpn set autoconnect on
