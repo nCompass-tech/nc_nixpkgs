@@ -63,6 +63,13 @@ in {
             cp -R usr/* $out/
           fi
           
+          # Patch desktop file to use correct binary path
+          if [ -e "$out/share/applications/oneleet-agent.desktop" ]; then
+            substituteInPlace $out/share/applications/oneleet-agent.desktop \
+              --replace-fail "/opt/Oneleet/oneleet-agent" "$out/bin/oneleet-agent"
+            echo "Patched desktop file to use correct binary path"
+          fi
+          
           # Copy everything from opt/ if it exists
           if [ -d opt ]; then
             mkdir -p $out/opt
