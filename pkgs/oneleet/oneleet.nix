@@ -1,30 +1,36 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
 let
   cfg = config.ncompass.oneleet;
-in {
+in
+{
   options.ncompass.oneleet = {
     enable = mkEnableOption "OneLeet";
-    
+
     package = mkOption {
       type = types.package;
       default = pkgs.stdenv.mkDerivation {
         name = "oneleet";
         version = "2.0.0-beta";
-        
+
         src = pkgs.fetchurl {
           url = "https://downloads.oneleet.com/agent/linux/Oneleet_2.0.0-beta.18_amd64.deb";
           sha256 = "sha256-PuYg+NUAM7+PGh0m+m5HuSSweIpy5HdzCdCpoCwkcX8=";
         };
-        
+
         nativeBuildInputs = with pkgs; [
           dpkg
           autoPatchelfHook
           makeWrapper
         ];
-        
+
         buildInputs = with pkgs; [
           alsa-lib
           glib
@@ -49,27 +55,27 @@ in {
           libxfixes
           libxrandr
         ];
-        
+
         unpackPhase = ''
           dpkg-deb -x $src . &> /dev/null
         '';
-        
+
         installPhase = ''
           echo "Installing OneLeet..."
           mkdir -p $out
-          
+
           # Copy everything from usr/ if it exists
           if [ -d usr ]; then
             cp -R usr/* $out/
           fi
-          
+
           # Patch desktop file to use correct binary path
           if [ -e "$out/share/applications/oneleet-agent.desktop" ]; then
             substituteInPlace $out/share/applications/oneleet-agent.desktop \
               --replace-fail "/opt/Oneleet/oneleet-agent" "$out/bin/oneleet-agent"
             echo "Patched desktop file to use correct binary path"
           fi
-          
+
           # Copy everything from opt/ if it exists
           if [ -d opt ]; then
             mkdir -p $out/opt
@@ -86,7 +92,7 @@ in {
               fi
             done
           fi
-          
+
           # Create a wrapper around oneleet-agent to add the password-store flag
           if [ -e "$out/bin/oneleet-agent" ]; then
             mv $out/bin/oneleet-agent $out/bin/oneleet-agent-unwrapped
@@ -96,7 +102,7 @@ in {
             echo "Created wrapper for oneleet-agent with libsecret password store flag"
           fi
         '';
-        
+
         meta = with lib; {
           description = "OneLeet application";
           homepage = "https://oneleet.com";
@@ -105,10 +111,10 @@ in {
       };
     };
   };
-  
+
   config = mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
-    
+
     # Create direct executables in /usr/bin
     system.activationScripts = {
       createOneLeetLinks = {
@@ -116,8 +122,8 @@ in {
           mkdir -p /usr/bin
           ln -sf ${cfg.package}/bin/oneleet-agent /usr/bin/oneleet-agent || true
         '';
-        deps = [];
+        deps = [ ];
       };
     };
   };
-} 
+}
