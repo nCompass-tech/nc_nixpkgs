@@ -13,6 +13,17 @@ let
   # Moves a pin file ({ "version", "hash" }) to the newest release in Oneleet's
   # update feed, after test-building it against this system's nixpkgs. It
   # never fails a rebuild: every problem is a warning and exit status 0.
+  # Callers can pass their own --nixpkgs/--package after these defaults (the
+  # last value wins), e.g. the nixpkgs their next switch will use.
+  #
+  # builtins.path names nixpkgs "source", which resolves to the store path the
+  # system already has; interpolating pkgs.path directly would copy all of
+  # nixpkgs (~200 MB) into a second store path per nixpkgs revision.
+  nixpkgsSource = builtins.path {
+    inherit (pkgs) path;
+    name = "source";
+  };
+
   updateCommand = pkgs.writeShellApplication {
     name = "oneleet-update";
     runtimeInputs = [
@@ -21,7 +32,7 @@ let
     ];
     text = ''
       exec python3 ${./update.py} \
-        --nixpkgs ${pkgs.path} \
+        --nixpkgs ${nixpkgsSource} \
         --package ${./package.nix} \
         --app-update-yml ${cfg.package}/opt/Oneleet/resources/app-update.yml \
         "$@"

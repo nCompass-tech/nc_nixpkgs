@@ -226,6 +226,29 @@ class MainTests(unittest.TestCase):
             self.assertEqual(update.main([]), 2)
         self.assertIn("required", err.getvalue())
 
+    def test_main_last_nixpkgs_and_package_win(self):
+        # The module's launcher passes defaults first; callers such as
+        # os-rebuild append their own --nixpkgs/--package, which must win.
+        calls = []
+
+        def fake_run(_pin, _url, _fetch, build, _log):
+            build("2.5.0", "sha512-x")
+            return 0
+
+        def fake_build(nixpkgs, package, version, hash_):
+            calls.append((nixpkgs, package, version, hash_))
+            return True
+
+        with mock.patch.object(update, "run", side_effect=fake_run), mock.patch.object(
+            update, "nix_test_build", side_effect=fake_build
+        ):
+            rc = update.main(
+                ["--nixpkgs", "/default", "--package", "/default.nix",
+                 "--nixpkgs", "/locked", "--package", "/locked.nix", "pin.json"]
+            )
+        self.assertEqual(rc, 0)
+        self.assertEqual(calls, [("/locked", "/locked.nix", "2.5.0", "sha512-x")])
+
     def test_main_survives_unexpected_errors(self):
         # The never-block rule must hold even against bugs in run().
         err = io.StringIO()
