@@ -97,6 +97,12 @@ leaves the setuid `pkexec` wrapper off (`security.polkit.enablePkexecWrapper`).
 To log out, run `sudo oneleet-cli logout`; `sudo oneleet-cli status` shows the
 current state.
 
+By default the test build uses the running system's nixpkgs. A flake can pass
+the nixpkgs and `package.nix` its next rebuild will use instead
+(`oneleet-update --nixpkgs <path> --package <path>/pkgs/oneleet/package.nix
+<pin>`), so the rebuild reuses the test build rather than building Oneleet
+again after a nixpkgs update.
+
 `oneleet-update` reads Oneleet's update feed, test-builds a newer release, and
 only then rewrites the pin. It never fails: if the feed is unreachable or the
 build fails, it prints a warning and keeps the current pin. Oneleet's in-app
