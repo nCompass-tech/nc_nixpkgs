@@ -88,6 +88,15 @@ ncompass.oneleet = {
 oneleet-update ./oneleet-pin.json   # then rebuild
 ```
 
+**Logging in on NixOS.** Use **Oneleet login** from your app launcher (or run
+`oneleet-login` in a terminal), paste the connect token from the Oneleet
+portal, enter your sudo password, and confirm the workspace. Logging in from
+the Oneleet window itself fails with "Connection Failed – the token may be
+invalid or expired": the window asks for root through `pkexec`, and NixOS
+leaves the setuid `pkexec` wrapper off (`security.polkit.enablePkexecWrapper`).
+To log out, run `sudo oneleet-cli logout`; `sudo oneleet-cli status` shows the
+current state.
+
 `oneleet-update` reads Oneleet's update feed, test-builds a newer release, and
 only then rewrites the pin. It never fails: if the feed is unreachable or the
 build fails, it prints a warning and keeps the current pin. Oneleet's in-app
