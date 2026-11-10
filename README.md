@@ -56,45 +56,40 @@ nordvpn set autoconnect on
 ### Oneleet (pkgs/oneleet/oneleet.nix)
 
 ```nix
+nixpkgs.config.allowUnfree = true;
+...
 imports = [
   ...
   <location>/pkgs/oneleet/oneleet.nix
   ...
 ];
-
-environment.systemPackages = with pkgs; [
-	...
-    dconf
-	libsecret
-	gnome-keyring
-	...
-];
-
-services = {
-  windowManager.i3 = {
-    ...
-    extraSessionCommands = ''
-        eval $(gnome-keyring-daemon --daemonize)
-        export SHH_AUTH_SOCK
-    '';
-  }
-
-  dbus = {
-    enable = true;
-    packaged = [ pkgs.dconf ];
-  }
-
-  gnome.gnome-keyring.enable = true;
-}
-
-programs = {
-    dconf.enable = true;
-}
-
+...
 ncompass.oneleet.enable = true;
-security.pam.services = {
-  login.enableGnomeKeyring = true;
-  lightdm.enableGnomeKeyring = true;
-};
-
 ```
+
+This installs the Oneleet GUI (`oneleet-agent`, with a desktop entry), the
+`oneleet-cli` command, and `oneleet-daemon.service`, which runs Oneleet's
+daemon as root. `/opt/Oneleet` links to the package because the daemon
+expects that path. Oneleet 2.5.0 and later keep the login session in the
+daemon, so no gnome-keyring setup is needed.
+
+The installed release is set by `ncompass.oneleet.version` and
+`ncompass.oneleet.hash` (defaults: a known-good release). To follow Oneleet's
+releases, keep both in a JSON pin file and update it before rebuilding:
+
+```nix
+ncompass.oneleet = {
+  enable = true;
+  inherit (lib.importJSON ./oneleet-pin.json) version hash;
+};
+```
+
+```bash
+oneleet-update ./oneleet-pin.json   # then rebuild
+```
+
+`oneleet-update` reads Oneleet's update feed, test-builds a newer release, and
+only then rewrites the pin. It never fails: if the feed is unreachable or the
+build fails, it prints a warning and keeps the current pin. Oneleet's in-app
+updates cannot apply on NixOS (they fail at the download step because the
+package is read-only), so the pin is the only way Oneleet gets updated.
