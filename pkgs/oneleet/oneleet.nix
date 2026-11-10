@@ -34,6 +34,65 @@ let
     python3 -m unittest -v test_update
     touch $out
   '';
+
+  # Logging in from the Oneleet window runs `pkexec oneleet-daemon login`,
+  # which needs the setuid pkexec wrapper. NixOS leaves that wrapper off
+  # (security.polkit.enablePkexecWrapper defaults to false), so the window
+  # fails with a generic "Connection Failed". This command does the same login
+  # through sudo instead: the token goes to the daemon CLI in a private file
+  # (deleted after reading), never on the command line, and the CLI asks for
+  # the workspace confirmation in the terminal.
+  loginCommand = pkgs.writeShellApplication {
+    name = "oneleet-login";
+    runtimeInputs = [ pkgs.coreutils ];
+    text = ''
+      pause() {
+        printf '\nPress Enter to close this window.'
+        read -r _ || true
+      }
+
+      printf 'Connect this device to Oneleet.\n'
+      printf 'Paste the connect token from the Oneleet portal (input hidden): '
+      IFS= read -rs token || true
+      echo
+      if [ -z "$token" ]; then
+        echo "No token entered; nothing was done."
+        pause
+        exit 1
+      fi
+
+      dir=$(mktemp -d)
+      trap 'rm -rf "$dir"' EXIT
+      (umask 077 && printf '%s' "$token" >"$dir/token")
+      unset token
+
+      echo "Running sudo oneleet-cli login: it asks for your password, then to confirm the workspace."
+      status=0
+      sudo ${cfg.package}/bin/oneleet-cli login --enrollment-token-file "$dir/token" || status=$?
+      if [ "$status" -eq 0 ]; then
+        echo "Done: this device is connected to Oneleet."
+      else
+        echo "Login failed (exit status $status)."
+      fi
+      pause
+      exit "$status"
+    '';
+  };
+
+  loginDesktopItem = pkgs.makeDesktopItem {
+    name = "oneleet-login";
+    desktopName = "Oneleet login";
+    comment = "Connect this device to Oneleet with a token from the portal";
+    exec = "${loginCommand}/bin/oneleet-login";
+    icon = "oneleet-agent";
+    terminal = true;
+    categories = [ "Utility" ];
+  };
+
+  loginTests = pkgs.runCommand "oneleet-login-tests" { } ''
+    bash ${./test_login.sh} ${loginCommand}/bin/oneleet-login
+    touch $out
+  '';
 in
 {
   options.ncompass.oneleet = {
@@ -71,16 +130,29 @@ in
       internal = true;
       description = "The oneleet-update command, exposed so it can be built on its own.";
     };
+
+    loginCommand = mkOption {
+      type = types.package;
+      default = loginCommand;
+      readOnly = true;
+      internal = true;
+      description = "The oneleet-login command, exposed so it can be built on its own.";
+    };
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = [
       cfg.package
       cfg.updateCommand
+      cfg.loginCommand
+      loginDesktopItem
     ];
 
-    # The update script's unit tests run as part of every system build.
-    system.checks = [ updateTests ];
+    # The update and login scripts' tests run as part of every system build.
+    system.checks = [
+      updateTests
+      loginTests
+    ];
 
     # Oneleet's own .deb install script registers this unit with
     # `oneleet-daemon install`; NixOS never runs that script, so the unit is
